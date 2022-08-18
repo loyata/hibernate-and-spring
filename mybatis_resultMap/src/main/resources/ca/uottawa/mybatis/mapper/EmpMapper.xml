@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+
+<!--update name here-->
+<mapper namespace="ca.uottawa.mybatis.mapper.EmpMapper">
+    <!--Emp getEmpByEmpId(@Param("empId") int empId);-->
+    <select id="getEmpByEmpId" resultType="Emp">
+        select * from t_emp where emp_id = #{empId}
+    </select>
+
+<!--    Emp getEmpJoinByEmpId(@Param("empId") int empId);-->
+    <resultMap id="getEmpJoinByEmpIdMap" type="Emp">
+        <id column="emp_id" property="empId"></id>
+        <result column="emp_name" property="empName"></result>
+        <result column="age" property="age"></result>
+        <result column="gender" property="gender"></result>
+        <result column="dept_id" property="dept.deptId"></result>
+        <result column="dept_name" property="dept.deptName"></result>
+    </resultMap>
+
+
+    <select id="getEmpJoinByEmpId" resultMap="getEmpJoinByEmpIdMap">
+        select * from t_emp join t_dept on t_emp.dept_id = t_dept.dept_id where t_emp.emp_id = #{empId}
+    </select>
+
+
+
+
+
+    <resultMap id="getEmpAndDeptByStepOneMap" type="Emp">
+        <id column="emp_id" property="empId"></id>
+        <result column="emp_name" property="empName"></result>
+        <result column="age" property="age"></result>
+        <result column="gender" property="gender"></result>
+        <association column="dept_id" property="dept" select="ca.uottawa.mybatis.mapper.DeptMapper.getEmpAndDeptByStepTwo"></association>
+    </resultMap>
+
+
+    <select id="getEmpAndDeptByStepOne" resultMap="getEmpAndDeptByStepOneMap">
+        select * from t_emp where emp_id = #{empId}
+    </select>
+
+
+
+<!--    List<Emp> getDeptAndEmpByStepTwo(@Param("deptId") Integer deptId);-->
+    <select id="getDeptAndEmpByStepTwo" resultType="Emp">
+        select * from t_emp where dept_id = #{deptId}
+    </select>
+
+<!--    int addEmpInBulk(@Param("emps") List<Emp> emps);-->
+    <insert id="addEmpInBulk">
+        insert into t_emp values
+        <foreach collection="list" item="e" separator=",">
+            (null, #{e.empName}, #{e.age}, #{e.gender}, null)
+        </foreach>
+    </insert>
+
+<!--    int deleteEmpInBulk(@Param("empIds") Integer[] empIds);-->
+    <delete id="deleteEmpInBulk">
+        delete from t_emp where emp_id in
+        <foreach collection="empIds" item="empId" open="(" close=")" separator=",">
+            #{empId}
+        </foreach>
+    </delete>
+
+</mapper>

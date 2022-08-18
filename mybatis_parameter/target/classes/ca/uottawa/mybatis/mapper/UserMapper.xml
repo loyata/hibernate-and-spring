@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--update name here-->
+<mapper namespace="ca.uottawa.mybatis.mapper.UserMapper">
+    <!--int insertUser();-->
+    <select id="checkLoginByMap" resultType="User">
+        select * from t_user where username = '${username}' and password = '${password}'
+    </select>
+
+    <select id="findUserById" resultType="User">
+        select * from t_user where id = #{id}
+    </select>
+
+    <select id="findUserByFuzzyQuery" resultType="User">
+        select * from t_user where username like '%%'
+    </select>
+
+    <insert id="insertUser" useGeneratedKeys="true" keyProperty="id">
+        insert into t_user values(null, #{username}, #{password}, ${age}, #{sex}, #{email})
+    </insert>
+</mapper>
